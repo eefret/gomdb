@@ -18,6 +18,7 @@ I *strongly* encourage you to check it out and contribute to keep it growing.
 Project Usage
 -------------
 The API usage is very simple. Just import the go-imdb package
+
 	import (
 		imdb "github.com/eefret/go-imdb"
 	)
