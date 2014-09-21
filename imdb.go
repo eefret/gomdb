@@ -135,7 +135,7 @@ func GetMovieByTitle(title string, year string) (*MovieResult, error) {
 	return r, nil
 }
 
-// returns  a MovieResult given a ImdbId ex:"tt2015381"
+// returns a MovieResult given a ImdbId ex:"tt2015381"
 func GetMovieByImdbId(id string) (*MovieResult, error) {
 	resp, err := omdbApiRequest("", id, "", "")
 	if err != nil {
@@ -186,4 +186,13 @@ func checkErrorStatus(status int) error {
 	} else {
 		return nil
 	}
+}
+
+//Stringer Interface for MovieResult
+func (mr MovieResult) String() string {
+	return fmt.Sprintf("#%s: %s (%s)", mr.ImdbID, mr.Title, mr.Year)
+}
+
+func (sr SearchResult) String() string {
+	return fmt.Sprintf("#%s: %s (%s) Type: %s", sr.ImdbId, sr.Title, sr.Year, sr.Type)
 }
