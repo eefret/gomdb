@@ -1,4 +1,4 @@
-The Open Movie Database API
+The Golang Omdb API
 =======
 
 Author: Christopher T. Herrera (eefretsoul AT gmail DOT com)
