@@ -3,6 +3,8 @@ The Open Movie Database API
 
 Author: Christopher T. Herrera (eefretsoul AT gmail DOT com)
 
+<iframe src="http://githubbadge.appspot.com/eefret" style="border: 0;height: 142px;width: 200px;overflow: hidden;" frameBorder="0"></iframe>
+
 This API uses the [omdbapi.com](http://omdbapi.com/) API by Brian Fritz
 
 ***
