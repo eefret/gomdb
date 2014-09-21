@@ -193,6 +193,7 @@ func (mr MovieResult) String() string {
 	return fmt.Sprintf("#%s: %s (%s)", mr.ImdbID, mr.Title, mr.Year)
 }
 
+//Stringer Interface for SearchResult
 func (sr SearchResult) String() string {
 	return fmt.Sprintf("#%s: %s (%s) Type: %s", sr.ImdbId, sr.Title, sr.Year, sr.Type)
 }
