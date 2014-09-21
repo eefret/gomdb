@@ -72,20 +72,20 @@ type MovieResult struct {
 	Awards            string
 	Poster            string
 	Metascore         string
-	imdbRating        string
-	imdbVotes         string
-	imdbID            string
+	ImdbRating        string
+	ImdbVotes         string
+	ImdbID            string
 	Type              string
-	tomatoMeter       string
-	tomatoImage       string
-	tomatoRating      string
-	tomatoReviews     string
-	tomatoFresh       string
-	tomatoRotten      string
-	tomatoConsensus   string
-	tomatoUserMeter   string
-	tomatoUserRating  string
-	tomatoUserReviews string
+	TomatoMeter       string
+	TomatoImage       string
+	TomatoRating      string
+	TomatoReviews     string
+	TomatoFresh       string
+	TomatoRotten      string
+	TomatoConsensus   string
+	TomatoUserMeter   string
+	TomatoUserRating  string
+	TomatoUserReviews string
 	DVD               string
 	BoxOffice         string
 	Production        string
