@@ -104,9 +104,11 @@ func SearchMovies(title string, year string) (*SearchResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	r := new(SearchResponse)
 	err = json.NewDecoder(resp.Body).Decode(r)
+	
 	if err != nil {
 		return nil, err
 	}
@@ -123,9 +125,11 @@ func GetMovieByTitle(title string, year string) (*MovieResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	r := new(MovieResult)
 	err = json.NewDecoder(resp.Body).Decode(r)
+	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -141,9 +145,11 @@ func GetMovieByImdbId(id string) (*MovieResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	r := new(MovieResult)
 	err = json.NewDecoder(resp.Body).Decode(r)
+	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
