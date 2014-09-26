@@ -129,7 +129,7 @@ func GetMovieByTitle(title string, year string) (*MovieResult, error) {
 
 	r := new(MovieResult)
 	err = json.NewDecoder(resp.Body).Decode(r)
-	defer resp.Body.Close()
+	
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +149,7 @@ func GetMovieByImdbId(id string) (*MovieResult, error) {
 
 	r := new(MovieResult)
 	err = json.NewDecoder(resp.Body).Decode(r)
-	defer resp.Body.Close()
+	
 	if err != nil {
 		return nil, err
 	}
