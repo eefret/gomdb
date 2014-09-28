@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	//"log"
 	"net/http"
 	"strings"
 )
@@ -28,7 +27,7 @@ import (
 //=======================================================================
 //							Const
 //=======================================================================
-const baseUrl string = "http://www.omdbapi.com/?"
+const baseURL string = "http://www.omdbapi.com/?"
 const plot string = "full"
 const tomatoes string = "true"
 
@@ -40,22 +39,22 @@ const tomatoes string = "true"
 //							Structs
 //=======================================================================
 
-//Type for the Search Response
+//SearchResult is the type for the search results
 type SearchResult struct {
 	Title  string
 	Year   string
-	ImdbId string
+	ImdbID string
 	Type   string
 }
 
-//Type that respond Search
+//SearchResponse is the struct of the response in a search
 type SearchResponse struct {
 	Search   []SearchResult
 	Response string
 	Error    string
 }
 
-//Type for searching a specific movie
+//MovieResult is the result struct of an specific movie search
 type MovieResult struct {
 	Title             string
 	Year              string
@@ -98,9 +97,9 @@ type MovieResult struct {
 //							Funcs
 //=======================================================================
 
-//Search for movies given a Title and year, Year is optional you can pass nil
+//SearchMovies search for movies given a Title and year, Year is optional you can pass nil
 func SearchMovies(title string, year string) (*SearchResponse, error) {
-	resp, err := omdbApiRequest(title, "", "", year)
+	resp, err := omdbAPIRequest(title, "", "", year)
 	if err != nil {
 		return nil, err
 	}
@@ -117,9 +116,9 @@ func SearchMovies(title string, year string) (*SearchResponse, error) {
 	return r, nil
 }
 
-//returns a MovieResult given Title
+//GetMovieByTitle returns a MovieResult given Title
 func GetMovieByTitle(title string, year string) (*MovieResult, error) {
-	resp, err := omdbApiRequest("", "", title, year)
+	resp, err := omdbAPIRequest("", "", title, year)
 	if err != nil {
 		return nil, err
 	}
@@ -135,9 +134,9 @@ func GetMovieByTitle(title string, year string) (*MovieResult, error) {
 	return r, nil
 }
 
-// returns a MovieResult given a ImdbId ex:"tt2015381"
-func GetMovieByImdbId(id string) (*MovieResult, error) {
-	resp, err := omdbApiRequest("", id, "", "")
+//GetMovieByImdbID returns a MovieResult given a ImdbID ex:"tt2015381"
+func GetMovieByImdbID(id string) (*MovieResult, error) {
+	resp, err := omdbAPIRequest("", id, "", "")
 	if err != nil {
 		return nil, err
 	}
@@ -153,21 +152,21 @@ func GetMovieByImdbId(id string) (*MovieResult, error) {
 	return r, nil
 }
 
-func omdbApiRequest(s string, i string, t string, y string) (resp *http.Response, err error) {
+func omdbAPIRequest(s string, i string, t string, y string) (resp *http.Response, err error) {
 	//s = Search Parameter, if this is != nil then its a searchMovies
-	//i = Id Parameter, if this is != nil then its a getMovieByImdbId
+	//i = Id Parameter, if this is != nil then its a getMovieByImdbID
 	//t = Title Parameter, if this is != nil then its a getMovieByTitle
 	//y = Year Parameter, Optional data for s and t search
 	//var res http.Response
 	var url string
 	if s != "" {
 		s = strings.Replace(s, " ", "%20", -1)
-		url = fmt.Sprintf(baseUrl+"s=%s&y=%s", s, y)
+		url = fmt.Sprintf(baseURL+"s=%s&y=%s", s, y)
 	} else if i != "" {
-		url = fmt.Sprintf(baseUrl+"i=%s&plot=%s&tomatoes=%s", i, plot, tomatoes)
+		url = fmt.Sprintf(baseURL+"i=%s&plot=%s&tomatoes=%s", i, plot, tomatoes)
 	} else if t != "" {
 		t = strings.Replace(t, " ", "%20", -1)
-		url = fmt.Sprintf(baseUrl+"t=%s&plot=%s&tomatoes=%s&y=%s", t, plot, tomatoes, y)
+		url = fmt.Sprintf(baseURL+"t=%s&plot=%s&tomatoes=%s&y=%s", t, plot, tomatoes, y)
 	} else {
 		return nil, errors.New("Invalid Request")
 	}
@@ -182,10 +181,9 @@ func omdbApiRequest(s string, i string, t string, y string) (resp *http.Response
 
 func checkErrorStatus(status int) error {
 	if status != 200 {
-		return errors.New(fmt.Sprintf("Status Code %d received from IMDB", status))
-	} else {
-		return nil
+		return fmt.Errorf("Status Code %d received from IMDB", status)
 	}
+	return nil
 }
 
 //Stringer Interface for MovieResult
@@ -195,5 +193,5 @@ func (mr MovieResult) String() string {
 
 //Stringer Interface for SearchResult
 func (sr SearchResult) String() string {
-	return fmt.Sprintf("#%s: %s (%s) Type: %s", sr.ImdbId, sr.Title, sr.Year, sr.Type)
+	return fmt.Sprintf("#%s: %s (%s) Type: %s", sr.ImdbID, sr.Title, sr.Year, sr.Type)
 }
