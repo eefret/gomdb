@@ -21,12 +21,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
+	"net/url"
 )
 
 //=======================================================================
 //							Const
 //=======================================================================
+
 const baseURL string = "http://www.omdbapi.com/?"
 const plot string = "full"
 const tomatoes string = "true"
@@ -103,9 +104,11 @@ func SearchMovies(title string, year string) (*SearchResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	r := new(SearchResponse)
 	err = json.NewDecoder(resp.Body).Decode(r)
+
 	if err != nil {
 		return nil, err
 	}
@@ -122,9 +125,11 @@ func GetMovieByTitle(title string, year string) (*MovieResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	r := new(MovieResult)
 	err = json.NewDecoder(resp.Body).Decode(r)
+
 	if err != nil {
 		return nil, err
 	}
@@ -140,9 +145,11 @@ func GetMovieByImdbID(id string) (*MovieResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	r := new(MovieResult)
 	err = json.NewDecoder(resp.Body).Decode(r)
+
 	if err != nil {
 		return nil, err
 	}
@@ -158,20 +165,32 @@ func omdbAPIRequest(s string, i string, t string, y string) (resp *http.Response
 	//t = Title Parameter, if this is != nil then its a getMovieByTitle
 	//y = Year Parameter, Optional data for s and t search
 	//var res http.Response
-	var url string
-	if s != "" {
-		s = strings.Replace(s, " ", "%20", -1)
-		url = fmt.Sprintf(baseURL+"s=%s&y=%s", s, y)
-	} else if i != "" {
-		url = fmt.Sprintf(baseURL+"i=%s&plot=%s&tomatoes=%s", i, plot, tomatoes)
-	} else if t != "" {
-		t = strings.Replace(t, " ", "%20", -1)
-		url = fmt.Sprintf(baseURL+"t=%s&plot=%s&tomatoes=%s&y=%s", t, plot, tomatoes, y)
+
+	var URL *url.URL
+	URL, err = url.Parse(baseURL)
+
+	if err != nil {
+		return nil, err
+	}
+	URL.Path += "/"
+	parameters := url.Values{}
+	if len(s) > 0 {
+		parameters.Add("s", s)
+		parameters.Add("y", y)
+	} else if len(i) > 0 {
+		parameters.Add("i", i)
+		parameters.Add("plot", plot)
+		parameters.Add("tomatoes", tomatoes)
+	} else if len(t) > 0 {
+		parameters.Add("t", t)
+		parameters.Add("plot", plot)
+		parameters.Add("tomatoes", tomatoes)
+		parameters.Add("y", y)
 	} else {
 		return nil, errors.New("Invalid Request")
 	}
-	//log.Print(url) //DEBUG
-	res, err := http.Get(url)
+	URL.RawQuery = parameters.Encode()
+	res, err := http.Get(URL.String())
 	err = checkErrorStatus(res.StatusCode)
 	if err != nil {
 		return nil, err
