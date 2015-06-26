@@ -17,32 +17,33 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
 	imdb "github.com/eefret/go-imdb"
-	"log"
+	"testing"
 )
 
-func main() {
-
+func TestMovieSearch(t *testing.T) {
 	//Testing SearchMovies
 	res, err := imdb.SearchMovies("The fifth element", "")
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
+	t.Log(res.Search[0].Title)
+}
 
+func TestGetMovieByTitle(t *testing.T) {
 	//Testing GetMovieByTitle
 	res2, err := imdb.GetMovieByTitle("True Grit", "1969")
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
+	t.Log(res2.Title)
+}
 
+func TestGetMovieByImdbId(t *testing.T) {
 	//Testing GetMovieByImdbId
-	res3, err := imdb.GetMovieByImdbId("tt2015381")
+	res3, err := imdb.GetMovieByImdbID("tt2015381")
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
-
-	fmt.Println(res.Search[0].Title)
-	fmt.Println(res2.Title)
-	fmt.Println(res3.Title)
+	t.Log(res3.Title)
 }
