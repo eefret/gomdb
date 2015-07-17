@@ -98,9 +98,9 @@ type MovieResult struct {
 //							Funcs
 //=======================================================================
 
-//SearchMovies search for movies given a Title and year, Year is optional you can pass nil
-func SearchMovies(title string, year string) (*SearchResponse, error) {
-	resp, err := omdbAPIRequest(title, "", "", year)
+//Search search for movies given a Title and year, Year is optional you can pass nil
+func Search(title string, year string) (*SearchResponse, error) {
+	resp, err := requestAPI(title, "", "", year)
 	if err != nil {
 		return nil, err
 	}
@@ -119,9 +119,9 @@ func SearchMovies(title string, year string) (*SearchResponse, error) {
 	return r, nil
 }
 
-//GetMovieByTitle returns a MovieResult given Title
-func GetMovieByTitle(title string, year string) (*MovieResult, error) {
-	resp, err := omdbAPIRequest("", "", title, year)
+//MovieByTitle returns a MovieResult given Title
+func MovieByTitle(title string, year string) (*MovieResult, error) {
+	resp, err := requestAPI("", "", title, year)
 	if err != nil {
 		return nil, err
 	}
@@ -139,9 +139,9 @@ func GetMovieByTitle(title string, year string) (*MovieResult, error) {
 	return r, nil
 }
 
-//GetMovieByImdbID returns a MovieResult given a ImdbID ex:"tt2015381"
-func GetMovieByImdbID(id string) (*MovieResult, error) {
-	resp, err := omdbAPIRequest("", id, "", "")
+//MovieByImdbID returns a MovieResult given a ImdbID ex:"tt2015381"
+func MovieByImdbID(id string) (*MovieResult, error) {
+	resp, err := requestAPI("", id, "", "")
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func GetMovieByImdbID(id string) (*MovieResult, error) {
 	return r, nil
 }
 
-func omdbAPIRequest(s string, i string, t string, y string) (resp *http.Response, err error) {
+func requestAPI(s string, i string, t string, y string) (resp *http.Response, err error) {
 	//s = Search Parameter, if this is != nil then its a searchMovies
 	//i = Id Parameter, if this is != nil then its a getMovieByImdbID
 	//t = Title Parameter, if this is != nil then its a getMovieByTitle
@@ -191,14 +191,14 @@ func omdbAPIRequest(s string, i string, t string, y string) (resp *http.Response
 	}
 	URL.RawQuery = parameters.Encode()
 	res, err := http.Get(URL.String())
-	err = checkErrorStatus(res.StatusCode)
+	err = checkErr(res.StatusCode)
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func checkErrorStatus(status int) error {
+func checkErr(status int) error {
 	if status != 200 {
 		return fmt.Errorf("Status Code %d received from IMDB", status)
 	}

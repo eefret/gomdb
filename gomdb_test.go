@@ -3,7 +3,7 @@ package gomdb
 import "testing"
 
 func TestImdbSearchMovies(t *testing.T) {
-	resp, err := SearchMovies("Fight Club", "1999")
+	resp, err := Search("Fight Club", "1999")
 	if err != nil {
 		t.Error("Failed Search Movies")
 	}
@@ -13,7 +13,7 @@ func TestImdbSearchMovies(t *testing.T) {
 }
 
 func TestImdbGetMovieByTitle(t *testing.T) {
-	resp, err := GetMovieByTitle("Fight Club", "1999")
+	resp, err := MovieByTitle("Fight Club", "1999")
 	if err != nil {
 		t.Error("Failed GetMovieByTitle")
 	}
@@ -23,7 +23,7 @@ func TestImdbGetMovieByTitle(t *testing.T) {
 }
 
 func TestImdbGetMovieByImdbID(t *testing.T) {
-	resp, err := GetMovieByImdbID("tt0137523")
+	resp, err := MovieByImdbID("tt0137523")
 	if err != nil {
 		t.Error("Failed GetMovieByImdbID")
 	}
