@@ -25,9 +25,9 @@ The API usage is very simple. Just import the go-imdb package
 
 And use any of the methods 
 
-	res, err := imdb.SearchMovies("The fifth element", "")
-	res2, err := imdb.GetMovieByTitle("True Grit", "1969")
-	res3, err := imdb.GetMovieByImdbId("tt2015381")
+	res, err := imdb.Search("The fifth element", "")
+	res2, err := imdb.MovieByTitle("True Grit", "1969")
+	res3, err := imdb.MovieByImdbID("tt2015381")
 
 See the project documentation to see the Response Objects and stuff
 
