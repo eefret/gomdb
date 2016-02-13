@@ -86,6 +86,7 @@ type MovieResult struct {
 	TomatoUserMeter   string
 	TomatoUserRating  string
 	TomatoUserReviews string
+	TomatoURL         string
 	DVD               string
 	BoxOffice         string
 	Production        string
