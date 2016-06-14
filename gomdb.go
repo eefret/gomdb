@@ -1,19 +1,4 @@
-/*
-Copyright 2014 Kaissersoft Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
+// Package gomdb is a golang implementation of the OMDB API.
 package gomdb
 
 import (
@@ -24,21 +9,11 @@ import (
 	"net/url"
 )
 
-//=======================================================================
-//							Const
-//=======================================================================
-
-const baseURL string = "http://www.omdbapi.com/?"
-const plot string = "full"
-const tomatoes string = "true"
-
-//=======================================================================
-//							Global vars
-//=======================================================================
-
-//=======================================================================
-//							Structs
-//=======================================================================
+const (
+	baseURL  = "http://www.omdbapi.com/?"
+	plot     = "full"
+	tomatoes = "true"
+)
 
 //SearchResult is the type for the search results
 type SearchResult struct {
