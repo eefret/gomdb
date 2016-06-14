@@ -15,6 +15,13 @@ const (
 	tomatoes = "true"
 )
 
+type QueryData struct {
+	Title  string
+	Year   string
+	ImdbId string
+	Type   string
+}
+
 //SearchResult is the type for the search results
 type SearchResult struct {
 	Title  string
@@ -25,9 +32,10 @@ type SearchResult struct {
 
 //SearchResponse is the struct of the response in a search
 type SearchResponse struct {
-	Search   []SearchResult
-	Response string
-	Error    string
+	Search       []SearchResult
+	Response     string
+	Error        string
+	totalResults int
 }
 
 //MovieResult is the result struct of an specific movie search
@@ -70,13 +78,9 @@ type MovieResult struct {
 	Error             string
 }
 
-//=======================================================================
-//							Funcs
-//=======================================================================
-
-//Search search for movies given a Title and year, Year is optional you can pass nil
-func Search(title string, year string) (*SearchResponse, error) {
-	resp, err := requestAPI(title, "", "", year)
+//Search for movies given a Title and year, Year is optional you can pass nil
+func Search(query *QueryData) (*SearchResponse, error) {
+	resp, err := requestAPI("search", query.Title, query.Year)
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +100,8 @@ func Search(title string, year string) (*SearchResponse, error) {
 }
 
 //MovieByTitle returns a MovieResult given Title
-func MovieByTitle(title string, year string) (*MovieResult, error) {
-	resp, err := requestAPI("", "", title, year)
+func MovieByTitle(query *QueryData) (*MovieResult, error) {
+	resp, err := requestAPI("title", query.Title, query.Year)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +121,7 @@ func MovieByTitle(title string, year string) (*MovieResult, error) {
 
 //MovieByImdbID returns a MovieResult given a ImdbID ex:"tt2015381"
 func MovieByImdbID(id string) (*MovieResult, error) {
-	resp, err := requestAPI("", id, "", "")
+	resp, err := requestAPI("id", id)
 	if err != nil {
 		return nil, err
 	}
@@ -135,13 +139,11 @@ func MovieByImdbID(id string) (*MovieResult, error) {
 	return r, nil
 }
 
-func requestAPI(s string, i string, t string, y string) (resp *http.Response, err error) {
-	//s = Search Parameter, if this is != nil then its a searchMovies
-	//i = Id Parameter, if this is != nil then its a getMovieByImdbID
-	//t = Title Parameter, if this is != nil then its a getMovieByTitle
-	//y = Year Parameter, Optional data for s and t search
-	//var res http.Response
-
+// helper function to call the API
+// param: apiCategory refers to which API we are calling. Can be "search", "title" or "id"
+// Depending on that value, we will search by "t" or "s" or "i"
+// param: params are the variadic list of params passed for that category
+func requestAPI(apiCategory string, params ...string) (resp *http.Response, err error) {
 	var URL *url.URL
 	URL, err = url.Parse(baseURL)
 
@@ -150,21 +152,21 @@ func requestAPI(s string, i string, t string, y string) (resp *http.Response, er
 	}
 	URL.Path += "/"
 	parameters := url.Values{}
-	if len(s) > 0 {
-		parameters.Add("s", s)
-		parameters.Add("y", y)
-	} else if len(i) > 0 {
-		parameters.Add("i", i)
+	switch apiCategory {
+	case "search":
+		parameters.Add("s", params[0])
+		parameters.Add("y", params[1])
+	case "title":
+		parameters.Add("t", params[0])
+		parameters.Add("y", params[1])
 		parameters.Add("plot", plot)
 		parameters.Add("tomatoes", tomatoes)
-	} else if len(t) > 0 {
-		parameters.Add("t", t)
+	case "id":
+		parameters.Add("i", params[0])
 		parameters.Add("plot", plot)
 		parameters.Add("tomatoes", tomatoes)
-		parameters.Add("y", y)
-	} else {
-		return nil, errors.New("Invalid Request")
 	}
+
 	URL.RawQuery = parameters.Encode()
 	res, err := http.Get(URL.String())
 	err = checkErr(res.StatusCode)

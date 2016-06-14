@@ -3,9 +3,11 @@ package gomdb
 import "testing"
 
 func TestImdbSearchMovies(t *testing.T) {
-	resp, err := Search("Fight Club", "1999")
+	query := &QueryData{Title: "Fight Club", Year: "1999"}
+	resp, err := Search(query)
 	if err != nil {
-		t.Error("Failed Search Movies")
+		t.Error(err)
+		return
 	}
 	if resp.Search[0].Title != "Fight Club" {
 		t.Error("Wrong Movie")
@@ -13,9 +15,11 @@ func TestImdbSearchMovies(t *testing.T) {
 }
 
 func TestImdbGetMovieByTitle(t *testing.T) {
-	resp, err := MovieByTitle("Fight Club", "1999")
+	query := &QueryData{Title: "Fight Club", Year: "1999"}
+	resp, err := MovieByTitle(query)
 	if err != nil {
-		t.Error("Failed GetMovieByTitle")
+		t.Error(err)
+		return
 	}
 	if resp.Title != "Fight Club" {
 		t.Error("Wrong Movie")
@@ -25,7 +29,8 @@ func TestImdbGetMovieByTitle(t *testing.T) {
 func TestImdbGetMovieByImdbID(t *testing.T) {
 	resp, err := MovieByImdbID("tt0137523")
 	if err != nil {
-		t.Error("Failed GetMovieByImdbID")
+		t.Error(err)
+		return
 	}
 	if resp.Title != "Fight Club" {
 		t.Error("Wrong Movie")
