@@ -3,7 +3,7 @@ package gomdb
 import "testing"
 
 func TestImdbSearchMovies(t *testing.T) {
-	query := &QueryData{Title: "Fight Club", Year: "1999"}
+	query := &QueryData{Title: "Fight Club", Year: "1999", SearchType: MovieSearch}
 	resp, err := Search(query)
 	if err != nil {
 		t.Error(err)

@@ -13,13 +13,17 @@ const (
 	baseURL  = "http://www.omdbapi.com/?"
 	plot     = "full"
 	tomatoes = "true"
+
+	MovieSearch   = "movie"
+	SeriesSearch  = "series"
+	EpisodeSearch = "episode"
 )
 
 type QueryData struct {
-	Title  string
-	Year   string
-	ImdbId string
-	Type   string
+	Title      string
+	Year       string
+	ImdbId     string
+	SearchType string
 }
 
 //SearchResult is the type for the search results
@@ -80,7 +84,7 @@ type MovieResult struct {
 
 //Search for movies given a Title and year, Year is optional you can pass nil
 func Search(query *QueryData) (*SearchResponse, error) {
-	resp, err := requestAPI("search", query.Title, query.Year)
+	resp, err := requestAPI("search", query.Title, query.Year, query.SearchType)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +105,7 @@ func Search(query *QueryData) (*SearchResponse, error) {
 
 //MovieByTitle returns a MovieResult given Title
 func MovieByTitle(query *QueryData) (*MovieResult, error) {
-	resp, err := requestAPI("title", query.Title, query.Year)
+	resp, err := requestAPI("title", query.Title, query.Year, query.SearchType)
 	if err != nil {
 		return nil, err
 	}
@@ -156,6 +160,8 @@ func requestAPI(apiCategory string, params ...string) (resp *http.Response, err 
 	case "search":
 		parameters.Add("s", params[0])
 		parameters.Add("y", params[1])
+		// TODO: validate params to only the right options
+		parameters.Add("type", params[2])
 	case "title":
 		parameters.Add("t", params[0])
 		parameters.Add("y", params[1])
