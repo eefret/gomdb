@@ -19,6 +19,7 @@ const (
 	EpisodeSearch = "episode"
 )
 
+// QueryData is the type to create the search query
 type QueryData struct {
 	Title      string
 	Year       string
@@ -160,11 +161,11 @@ func requestAPI(apiCategory string, params ...string) (resp *http.Response, err 
 	case "search":
 		parameters.Add("s", params[0])
 		parameters.Add("y", params[1])
-		// TODO: validate params to only the right options
 		parameters.Add("type", params[2])
 	case "title":
 		parameters.Add("t", params[0])
 		parameters.Add("y", params[1])
+		parameters.Add("type", params[2])
 		parameters.Add("plot", plot)
 		parameters.Add("tomatoes", tomatoes)
 	case "id":
