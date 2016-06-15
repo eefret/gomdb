@@ -151,9 +151,17 @@ func MovieByImdbID(id string) (*MovieResult, error) {
 func requestAPI(apiCategory string, params ...string) (resp *http.Response, err error) {
 	var URL *url.URL
 	URL, err = url.Parse(baseURL)
-
 	if err != nil {
 		return nil, err
+	}
+
+	// Checking for invalid category
+	if len(params) > 1 && params[2] != "" {
+		if params[2] != MovieSearch &&
+			params[2] != SeriesSearch &&
+			params[2] != EpisodeSearch {
+			return nil, errors.New("Invalid search category- " + params[2])
+		}
 	}
 	URL.Path += "/"
 	parameters := url.Values{}

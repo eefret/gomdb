@@ -61,6 +61,28 @@ func TestFailSearch(t *testing.T) {
 	}
 }
 
+func TestInvalidCategory(t *testing.T) {
+	tests := []struct {
+		query *QueryData
+	}{
+		{&QueryData{Title: "Game of Thrones", Year: "2001", SearchType: "bad"}},
+		{&QueryData{Title: "Dexter", SearchType: "bad"}},
+	}
+
+	for i, item := range tests {
+		_, err := Search(item.query)
+		if err == nil {
+			t.Errorf("Test[%d]: Got nil error", i)
+			continue
+		}
+		// Checking for strings is bad. But the error type is formatted
+		if err.Error() != "Invalid search category- bad" {
+			t.Errorf("Test[%d]: Unexpected value- %s, Got- %s", i, err)
+			continue
+		}
+	}
+}
+
 func TestMovieByTitle(t *testing.T) {
 	tests := []struct {
 		query *QueryData
