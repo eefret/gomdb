@@ -1,5 +1,8 @@
 The Golang Omdb API
 =======
+[![Build Status](https://travis-ci.org/eefret/gomdb.svg?branch=master)](https://travis-ci.org/eefret/gomdb)
+[![GoDoc](https://godoc.org/github.com/eefret/go-imdb?status.svg)](https://godoc.org/github.com/eefret/go-imdb)
+
 
 Author: Christopher T. Herrera (eefretsoul AT gmail DOT com)
 
@@ -55,8 +58,3 @@ func main() {
 
 
 See the project documentation to see the Response Objects and stuff
-
-Project Documentation
----------------------
-The automatically generated documentation can be found in godocs.
-[![GoDoc](https://godoc.org/github.com/eefret/go-imdb?status.svg)](https://godoc.org/github.com/eefret/go-imdb)
