@@ -1,19 +1,4 @@
-/*
-Copyright 2014 Kaissersoft Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
+// Package gomdb is a golang implementation of the OMDB API.
 package gomdb
 
 import (
@@ -24,21 +9,23 @@ import (
 	"net/url"
 )
 
-//=======================================================================
-//							Const
-//=======================================================================
+const (
+	baseURL  = "http://www.omdbapi.com/?"
+	plot     = "full"
+	tomatoes = "true"
 
-const baseURL string = "http://www.omdbapi.com/?"
-const plot string = "full"
-const tomatoes string = "true"
+	MovieSearch   = "movie"
+	SeriesSearch  = "series"
+	EpisodeSearch = "episode"
+)
 
-//=======================================================================
-//							Global vars
-//=======================================================================
-
-//=======================================================================
-//							Structs
-//=======================================================================
+// QueryData is the type to create the search query
+type QueryData struct {
+	Title      string
+	Year       string
+	ImdbId     string
+	SearchType string
+}
 
 //SearchResult is the type for the search results
 type SearchResult struct {
@@ -50,9 +37,10 @@ type SearchResult struct {
 
 //SearchResponse is the struct of the response in a search
 type SearchResponse struct {
-	Search   []SearchResult
-	Response string
-	Error    string
+	Search       []SearchResult
+	Response     string
+	Error        string
+	totalResults int
 }
 
 //MovieResult is the result struct of an specific movie search
@@ -95,13 +83,9 @@ type MovieResult struct {
 	Error             string
 }
 
-//=======================================================================
-//							Funcs
-//=======================================================================
-
-//Search search for movies given a Title and year, Year is optional you can pass nil
-func Search(title string, year string) (*SearchResponse, error) {
-	resp, err := requestAPI(title, "", "", year)
+//Search for movies given a Title and year, Year is optional you can pass nil
+func Search(query *QueryData) (*SearchResponse, error) {
+	resp, err := requestAPI("search", query.Title, query.Year, query.SearchType)
 	if err != nil {
 		return nil, err
 	}
@@ -121,8 +105,8 @@ func Search(title string, year string) (*SearchResponse, error) {
 }
 
 //MovieByTitle returns a MovieResult given Title
-func MovieByTitle(title string, year string) (*MovieResult, error) {
-	resp, err := requestAPI("", "", title, year)
+func MovieByTitle(query *QueryData) (*MovieResult, error) {
+	resp, err := requestAPI("title", query.Title, query.Year, query.SearchType)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +126,7 @@ func MovieByTitle(title string, year string) (*MovieResult, error) {
 
 //MovieByImdbID returns a MovieResult given a ImdbID ex:"tt2015381"
 func MovieByImdbID(id string) (*MovieResult, error) {
-	resp, err := requestAPI("", id, "", "")
+	resp, err := requestAPI("id", id)
 	if err != nil {
 		return nil, err
 	}
@@ -160,36 +144,44 @@ func MovieByImdbID(id string) (*MovieResult, error) {
 	return r, nil
 }
 
-func requestAPI(s string, i string, t string, y string) (resp *http.Response, err error) {
-	//s = Search Parameter, if this is != nil then its a searchMovies
-	//i = Id Parameter, if this is != nil then its a getMovieByImdbID
-	//t = Title Parameter, if this is != nil then its a getMovieByTitle
-	//y = Year Parameter, Optional data for s and t search
-	//var res http.Response
-
+// helper function to call the API
+// param: apiCategory refers to which API we are calling. Can be "search", "title" or "id"
+// Depending on that value, we will search by "t" or "s" or "i"
+// param: params are the variadic list of params passed for that category
+func requestAPI(apiCategory string, params ...string) (resp *http.Response, err error) {
 	var URL *url.URL
 	URL, err = url.Parse(baseURL)
-
 	if err != nil {
 		return nil, err
 	}
+
+	// Checking for invalid category
+	if len(params) > 1 && params[2] != "" {
+		if params[2] != MovieSearch &&
+			params[2] != SeriesSearch &&
+			params[2] != EpisodeSearch {
+			return nil, errors.New("Invalid search category- " + params[2])
+		}
+	}
 	URL.Path += "/"
 	parameters := url.Values{}
-	if len(s) > 0 {
-		parameters.Add("s", s)
-		parameters.Add("y", y)
-	} else if len(i) > 0 {
-		parameters.Add("i", i)
+	switch apiCategory {
+	case "search":
+		parameters.Add("s", params[0])
+		parameters.Add("y", params[1])
+		parameters.Add("type", params[2])
+	case "title":
+		parameters.Add("t", params[0])
+		parameters.Add("y", params[1])
+		parameters.Add("type", params[2])
 		parameters.Add("plot", plot)
 		parameters.Add("tomatoes", tomatoes)
-	} else if len(t) > 0 {
-		parameters.Add("t", t)
+	case "id":
+		parameters.Add("i", params[0])
 		parameters.Add("plot", plot)
 		parameters.Add("tomatoes", tomatoes)
-		parameters.Add("y", y)
-	} else {
-		return nil, errors.New("Invalid Request")
 	}
+
 	URL.RawQuery = parameters.Encode()
 	res, err := http.Get(URL.String())
 	err = checkErr(res.StatusCode)
