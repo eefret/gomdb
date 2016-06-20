@@ -24,7 +24,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/efret/gomdb"
+	"github.com/eefret/gomdb"
 )
 
 func main() {
