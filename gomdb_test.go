@@ -1,6 +1,25 @@
 package gomdb
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
+
+var apiKey = os.Getenv("OMDB_API_KEY")
+
+func TestNoKey(t *testing.T) {
+	api := Init("")
+	_, err := api.Search(&QueryData{Title: "Her"})
+	if err == nil {
+		t.Errorf("Expected to fail")
+	}
+	if err != nil {
+		expectedErrorMsg := "Status Code 401 received from IMDB"
+		if err.Error() != expectedErrorMsg {
+			t.Errorf("Expected- %s, Got- %s", expectedErrorMsg, err)
+		}
+	}
+}
 
 func TestSearch(t *testing.T) {
 	tests := []struct {
@@ -21,9 +40,9 @@ func TestSearch(t *testing.T) {
 			"2015",
 		},
 	}
-
+	api := Init(apiKey)
 	for i, item := range tests {
-		resp, err := Search(item.query)
+		resp, err := api.Search(item.query)
 		if err != nil {
 			t.Errorf("Test[%d]: %s", i, err)
 			continue
@@ -47,8 +66,9 @@ func TestFailSearch(t *testing.T) {
 		{&QueryData{Title: "Dexter", SearchType: EpisodeSearch}},
 	}
 
+	api := Init(apiKey)
 	for i, item := range tests {
-		_, err := Search(item.query)
+		_, err := api.Search(item.query)
 		if err == nil {
 			t.Errorf("Test[%d]: Got nil error", i)
 			continue
@@ -69,8 +89,9 @@ func TestInvalidCategory(t *testing.T) {
 		{&QueryData{Title: "Dexter", SearchType: "bad"}},
 	}
 
+	api := Init(apiKey)
 	for i, item := range tests {
-		_, err := Search(item.query)
+		_, err := api.Search(item.query)
 		if err == nil {
 			t.Errorf("Test[%d]: Got nil error", i)
 			continue
@@ -103,8 +124,10 @@ func TestMovieByTitle(t *testing.T) {
 		},
 	}
 
+	api := Init(apiKey)
+
 	for i, item := range tests {
-		resp, err := MovieByTitle(item.query)
+		resp, err := api.MovieByTitle(item.query)
 		if err != nil {
 			t.Errorf("Test[%d]: %s", i, err)
 			continue
@@ -143,8 +166,10 @@ func TestMovieByImdbID(t *testing.T) {
 		},
 	}
 
+	api := Init(apiKey)
+
 	for i, item := range tests {
-		resp, err := MovieByImdbID(item.id)
+		resp, err := api.MovieByImdbID(item.id)
 		if err != nil {
 			t.Errorf("Test[%d]: %s", i, err)
 			continue
