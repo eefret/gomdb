@@ -19,6 +19,14 @@ const (
 	EpisodeSearch = "episode"
 )
 
+type OmdbApi struct {
+	apiKey string
+}
+
+func Init(apiKey string) *OmdbApi {
+	return &OmdbApi{apiKey: apiKey}
+}
+
 // QueryData is the type to create the search query
 type QueryData struct {
 	Title      string
@@ -84,8 +92,8 @@ type MovieResult struct {
 }
 
 //Search for movies given a Title and year, Year is optional you can pass nil
-func Search(query *QueryData) (*SearchResponse, error) {
-	resp, err := requestAPI("search", query.Title, query.Year, query.SearchType)
+func (api *OmdbApi) Search(query *QueryData) (*SearchResponse, error) {
+	resp, err := api.requestAPI("search", query.Title, query.Year, query.SearchType)
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +113,8 @@ func Search(query *QueryData) (*SearchResponse, error) {
 }
 
 //MovieByTitle returns a MovieResult given Title
-func MovieByTitle(query *QueryData) (*MovieResult, error) {
-	resp, err := requestAPI("title", query.Title, query.Year, query.SearchType)
+func (api *OmdbApi) MovieByTitle(query *QueryData) (*MovieResult, error) {
+	resp, err := api.requestAPI("title", query.Title, query.Year, query.SearchType)
 	if err != nil {
 		return nil, err
 	}
@@ -125,8 +133,8 @@ func MovieByTitle(query *QueryData) (*MovieResult, error) {
 }
 
 //MovieByImdbID returns a MovieResult given a ImdbID ex:"tt2015381"
-func MovieByImdbID(id string) (*MovieResult, error) {
-	resp, err := requestAPI("id", id)
+func (api *OmdbApi) MovieByImdbID(id string) (*MovieResult, error) {
+	resp, err := api.requestAPI("id", id)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +156,7 @@ func MovieByImdbID(id string) (*MovieResult, error) {
 // param: apiCategory refers to which API we are calling. Can be "search", "title" or "id"
 // Depending on that value, we will search by "t" or "s" or "i"
 // param: params are the variadic list of params passed for that category
-func requestAPI(apiCategory string, params ...string) (resp *http.Response, err error) {
+func (api *OmdbApi) requestAPI(apiCategory string, params ...string) (resp *http.Response, err error) {
 	var URL *url.URL
 	URL, err = url.Parse(baseURL)
 	if err != nil {
@@ -165,6 +173,8 @@ func requestAPI(apiCategory string, params ...string) (resp *http.Response, err 
 	}
 	URL.Path += "/"
 	parameters := url.Values{}
+	parameters.Add("apikey", api.apiKey)
+
 	switch apiCategory {
 	case "search":
 		parameters.Add("s", params[0])

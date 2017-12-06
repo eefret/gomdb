@@ -31,8 +31,9 @@ import (
 )
 
 func main() {
+        api := gomdb.Init(YOUR_API_KEY)
 	query := &gomdb.QueryData{Title: "Macbeth", SearchType: gomdb.MovieSearch}
-	res, err := gomdb.Search(query)
+	res, err := api.Search(query)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -40,14 +41,14 @@ func main() {
 	fmt.Println(res.Search)
 
 	query = &gomdb.QueryData{Title: "Macbeth", Year: "2015"}
-	res2, err := gomdb.MovieByTitle(query)
+	res2, err := api.MovieByTitle(query)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(res2)
 
-	res3, err := gomdb.MovieByImdbID("tt2884018")
+	res3, err := api.MovieByImdbID("tt2884018")
 	if err != nil {
 		fmt.Println(err)
 		return
