@@ -31,7 +31,8 @@ import (
 )
 
 func main() {
-        api := gomdb.Init(YOUR_API_KEY)
+	api := gomdb.Init(YOUR_API_KEY)
+	
 	query := &gomdb.QueryData{Title: "Macbeth", SearchType: gomdb.MovieSearch}
 	res, err := api.Search(query)
 	if err != nil {
@@ -48,13 +49,30 @@ func main() {
 	}
 	fmt.Println(res2)
 
-	res3, err := api.MovieByImdbID("tt2884018")
+	query = &gomdb.QueryData{Title: "Rick and Morty", Season: "1", Episode: "8", SearchType: gomdb.EpisodeSearch}
+	res3, err := api.MovieByTitle(query)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(res3)
 }
+
+	query = &gomdb.QueryData{ImdbId: "tt2884018"}
+	res4, err := api.MovieByImdbID(query)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(res4)
+
+	query = &gomdb.QueryData{ImdbId: "tt0944947", Season: "1", Episode: "1", SearchType: gomdb.EpisodeSearch}
+	res5, err := api.MovieByImdbID(query)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(res5)
 ```
 
 
