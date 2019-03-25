@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	baseURL  = "http://www.omdbapi.com/?"
+	baseURL  = "http://www.omdbapi.com"
 	plot     = "full"
 	tomatoes = "true"
 
@@ -33,6 +33,8 @@ type QueryData struct {
 	Year       string
 	ImdbId     string
 	SearchType string
+	Season     string
+	Episode    string
 }
 
 //SearchResult is the type for the search results
@@ -114,7 +116,8 @@ func (api *OmdbApi) Search(query *QueryData) (*SearchResponse, error) {
 
 //MovieByTitle returns a MovieResult given Title
 func (api *OmdbApi) MovieByTitle(query *QueryData) (*MovieResult, error) {
-	resp, err := api.requestAPI("title", query.Title, query.Year, query.SearchType)
+	resp, err := api.requestAPI("title", query.Title, query.Year, query.SearchType, query.Season,
+		query.Episode)
 	if err != nil {
 		return nil, err
 	}
@@ -133,8 +136,9 @@ func (api *OmdbApi) MovieByTitle(query *QueryData) (*MovieResult, error) {
 }
 
 //MovieByImdbID returns a MovieResult given a ImdbID ex:"tt2015381"
-func (api *OmdbApi) MovieByImdbID(id string) (*MovieResult, error) {
-	resp, err := api.requestAPI("id", id)
+func (api *OmdbApi) MovieByImdbID(query *QueryData) (*MovieResult, error) {
+	resp, err := api.requestAPI("id", query.ImdbId, query.Year, query.SearchType, query.Season,
+		query.Episode)
 	if err != nil {
 		return nil, err
 	}
@@ -184,10 +188,15 @@ func (api *OmdbApi) requestAPI(apiCategory string, params ...string) (resp *http
 		parameters.Add("t", params[0])
 		parameters.Add("y", params[1])
 		parameters.Add("type", params[2])
+		parameters.Add("Season", params[3])
+		parameters.Add("Episode", params[4])
 		parameters.Add("plot", plot)
 		parameters.Add("tomatoes", tomatoes)
 	case "id":
 		parameters.Add("i", params[0])
+		parameters.Add("type", params[2])
+		parameters.Add("Season", params[3])
+		parameters.Add("Episode", params[4])
 		parameters.Add("plot", plot)
 		parameters.Add("tomatoes", tomatoes)
 	}
